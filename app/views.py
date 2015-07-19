@@ -10,7 +10,24 @@ from app import app, db, lm
 from .forms import LoginForm
 from .models import User
 
+@app.before_request
+def before_request():
+	'''
+	Check if user login in stored in flask session imported helper
+	'''
+	g.user = current_user
+
 @app.route('/')
+@app.route('/home')
+def home():
+	if g.user is None or not g.user.is_authenticated():
+		user = 'you sneaky anonymous user'
+	else:
+		user = g.user.nickname
+	return render_template('home.html',
+							title="Welcome",
+							user=user)
+
 @app.route('/index')
 @login_required
 def index():
@@ -33,13 +50,6 @@ def index():
 							user = user,
 							posts = posts)
 
-@app.before_request
-def before_request():
-	'''
-	Check if user login in stored in flask session
-	'''
-	g.user = current_user
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	'''
@@ -59,7 +69,7 @@ def login():
 		session['remember_me'] = form.remember_me.data
 		if form.use_email.data == 'email':
 			email = form.email.data
-			after_login(email)
+			return after_login(email)
 		#return resp
 		# oid is a dum pos but this line handles a call to an external
 		# source so that the user doesn't have to create a unique login
@@ -70,7 +80,7 @@ def login():
 
 def after_login(email):
 	'''
-	Verifies response from oid.loginhandler & sets user data to flask session
+	Verifies response from user input & sets user data to flask session
 	'''
 	if email is None or email == "":
 		# validate email for arbitrary conditions
@@ -89,10 +99,16 @@ def after_login(email):
 		remember_me = session['remember_me']
 		session.pop('remember_me', None) # why pop here?
 	# login_user is a flask ext that stores session info
-	login_user(user, remember = remember_me)
+	login_user(user, remember=remember_me)
 	return redirect(request.args.get('next') or url_for('index'))
 
 @lm.user_loader
 def load_user(id):
 	#loads user from db
 	return User.query.get(int(id))
+
+@app.route('/logout')
+def logout():
+	#logout the user and take them back to the home page
+	logout_user() # imported
+	return redirect(url_for('home'))
