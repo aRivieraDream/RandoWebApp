@@ -12,6 +12,7 @@ class User(db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     last_seen = db.Column(db.DateTime)
+    about_me = db.Column(db.String(140))
 
     def is_authenticated(self):
         #fill out if restricting unauthenticated users

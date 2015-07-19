@@ -8,8 +8,8 @@ issues of integrating html and python.
 # basic module import from flask
 from flask.ext.wtf import Form
 # you must pull in the types of fields and validators you need individually.
-from wtforms import StringField, BooleanField, SelectField
-from wtforms.validators import DataRequired
+from wtforms import StringField, BooleanField, SelectField, TextField
+from wtforms.validators import DataRequired, Length
 
 class LoginForm(Form):
     '''
@@ -23,3 +23,10 @@ class LoginForm(Form):
     use_email = SelectField('use_email', default='email',
                             choices=[('email', 'email')])
     remember_me = BooleanField('remember_me', default=True)
+
+class EditForm(Form):
+    '''
+    Provide fields for editing user login info.
+    '''
+    nickname = StringField('nickname', validators=[DataRequired()])
+    about_me = TextField('about_me', validators=[Length(min=0, max=140)])

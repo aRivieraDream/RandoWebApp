@@ -7,8 +7,16 @@ from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 # these are set in the __init__.py file
 from app import app, db, lm
-from .forms import LoginForm
+# bring forms in from forms.py
+from .forms import LoginForm, EditForm
 from .models import User
+#timestamp shit
+from datetime import datetime
+
+@lm.user_loader
+def load_user(id):
+	#loads user from db
+	return User.query.get(int(id))
 
 @app.before_request
 def before_request():
@@ -16,6 +24,10 @@ def before_request():
 	Check if user login in stored in flask session imported helper
 	'''
 	g.user = current_user
+	if g.user.is_authenticated():
+		g.user.last_seen = datetime.utcnow()
+		db.session.add(g.user)
+		db.session.commit()
 
 @app.route('/')
 @app.route('/home')
@@ -120,13 +132,31 @@ def after_login(email):
 	login_user(user, remember=remember_me)
 	return redirect(request.args.get('next') or url_for('index'))
 
-@lm.user_loader
-def load_user(id):
-	#loads user from db
-	return User.query.get(int(id))
-
 @app.route('/logout')
 def logout():
 	#logout the user and take them back to the home page
 	logout_user() # imported
 	return redirect(url_for('home'))
+
+@app.route('/edit', methods=['GET', 'POST'])
+@login_required
+def edit():
+	form = EditForm()
+	if form.validate_on_submit():
+		g.user.nickname = form.nickname.data
+		g.user.about_me = form.about_me.data
+		db.session.add(g.user)
+		db.session.commit()
+		flash('Your changes have been saved')
+		return redirect(url_for('edit'))
+	else:
+		form.nickname.data = g.user.nickname
+		form.about_me.data = g.user.about_me
+		return render_template('edit.html', form=form)
+'''
+@login_required
+@app.route('/admin', methods=['GET'])
+def admin():
+	form = AdminForm
+	return render_template('admin.html', title='Control Center')
+'''

@@ -21,4 +21,5 @@ There were a bunch of dependencies setup following the instruction of the [tutor
   - preset preferences based on user (auto prep form)
   - typeahead for quick filling known data
 * Create an initialization sequence for easy deployment.
+* 
 * Admin section for monitoring
