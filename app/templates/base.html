@@ -1,0 +1,29 @@
+<!--
+Base layer of all pages on site. Contains:
+Nav bar:
+Flashed Message handling: ????
+Block content call rendered by specific html page:
+-->
+<html>
+  <head>
+    {% if title %}
+    <title>{{ title }} - Pierce's Test Blog</title>
+    {% else %}
+    <title>Welcome to Pierce's Test Blog</title>
+    {% endif %}
+  </head>
+  <body>
+    <div>Microblog: <a href="/index">Home</a> <a href="/login">Login</a></div><!-- nav bar with link to page -->
+    <hr>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }} </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </body>
+</html>
