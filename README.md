@@ -15,5 +15,10 @@ There were a bunch of dependencies setup following the instruction of the [tutor
 - `./run.py`
 
 ##Future
+* Logout
+* Facelift - bootstrap css
+* Build functionality for storing info
+  - preset preferences based on user (auto prep form)
+  - typeahead for quick filling known data
 * Create an initialization sequence for easy deployment.
 * Admin section for monitoring
