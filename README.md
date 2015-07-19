@@ -16,4 +16,4 @@ There were a bunch of dependencies setup following the instruction of the [tutor
 
 ##Future
 * Create an initialization sequence for easy deployment.
-* Admin section for monitering
+* Admin section for monitoring
