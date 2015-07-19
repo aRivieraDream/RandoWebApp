@@ -15,10 +15,12 @@ Block content call rendered by specific html page:
   <body>
     <!-- nav bar with link to page -->
     <div>Microblog:
-      <a href="{{ url_for('home') }}">Home</a>
-      | <a href="{{ url_for('login') }}">Login</a>
+      <a href="{{ url_for('home') }}">Front Page</a>
       {% if g.user.is_authenticated() %}
-      | <a href="{{ url_for('logout') }}">Logout</a>
+      | <a href="{{ url_for('user', nickname=g.user.nickname) }}">Home</a>
+      | <a href="{{ url_for('logout') }}">Logout</a>  
+      {% else %}
+      | <a href="{{ url_for('login') }}">Login</a>
       {% endif %}
     </div>
     <hr>

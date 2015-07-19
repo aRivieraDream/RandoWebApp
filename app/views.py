@@ -22,11 +22,27 @@ def before_request():
 def home():
 	if g.user is None or not g.user.is_authenticated():
 		user = 'you sneaky anonymous user'
+		return render_template('home.html',
+								title="Welcome",
+								user=user)
 	else:
-		user = g.user.nickname
-	return render_template('home.html',
-							title="Welcome",
-							user=user)
+		return index()
+
+@app.route('/user/<nickname>')
+@login_required
+def user(nickname):
+	user = User.query.filter_by(nickname=nickname).first()
+	if user == None:
+		flash('User %s was not found.' % nickname)
+		return redirect(url_for('index'))
+	posts = [
+		{'author': user, 'body': 'Test post #1'},
+		{'author': user, 'body': 'Test post #2'}
+	]
+	return render_template('user.html',
+							user=user,
+							posts=posts)
+
 
 @app.route('/index')
 @login_required
@@ -58,6 +74,8 @@ def login():
 	POST: validates user input & updates db if new user or retreives
 		  old user data.
 	NOTE: not supporting openid cause it suxdix
+	TODO:
+	change handling of username to support username rather than email
 	'''
 	#if user login already stored in session data, skip everything
 	if g.user is not None and g.user.is_authenticated():
