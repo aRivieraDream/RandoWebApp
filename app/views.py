@@ -99,7 +99,7 @@ def login():
 		username = form.username.data
 		password = form.password.data
 		session['remember_me'] = form.remember_me.data
-			return after_login(username, password)
+		return after_login(username, password)
 	return render_template('login.html',
 							title='Sign In',
 							form=form)

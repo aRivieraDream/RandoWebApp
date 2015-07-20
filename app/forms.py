@@ -9,7 +9,8 @@ issues of integrating html and python.
 from flask.ext.wtf import Form
 # you must pull in the types of fields and validators you need individually.
 from wtforms import StringField, BooleanField, SelectField, TextField, PasswordField
-from wtforms.validators import DataRequired, Length, PasswordInput
+from wtforms.validators import DataRequired, Length
+from wtforms.widgets import PasswordInput
 
 class LoginForm(Form):
     '''
