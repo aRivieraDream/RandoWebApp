@@ -143,6 +143,7 @@ def logout():
 def edit():
 	form = EditForm()
 	if form.validate_on_submit():
+		# bugging out: no restrictions on same usernames
 		g.user.nickname = form.nickname.data
 		g.user.about_me = form.about_me.data
 		db.session.add(g.user)
@@ -153,10 +154,22 @@ def edit():
 		form.nickname.data = g.user.nickname
 		form.about_me.data = g.user.about_me
 		return render_template('edit.html', form=form)
-'''
+
 @login_required
 @app.route('/admin', methods=['GET'])
 def admin():
-	form = AdminForm
-	return render_template('admin.html', title='Control Center')
-'''
+	#form = AdminForm
+	user_list = User.query.all()
+	return render_template('admin.html', title='Control Center', users=user_list)
+
+@app.errorhandler(404)
+def not_found_error(error):
+	# todo: make 404 html page
+	print 'In 404 method'
+	return 'you just got 404\'d sucker'
+
+@app.errorhandler(500)
+def internal_error(error):
+	# todo: make 500 html page
+	db.session.rollback()
+	return 'The server dun goofed. Please go back and try again.'

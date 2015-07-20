@@ -35,7 +35,8 @@ class User(db.Model):
 
     def __repr__(self):
         #how the user object is printed
-        return '<User %r>' % (self.nickname)
+        return '<userID=%r nickname=%r email=%r last_seen=%r>' % (self.id,
+                self.nickname, self.email, self.last_seen)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key = True)

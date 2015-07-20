@@ -1,0 +1,22 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% block content %}
+  <h1>Control Center aka Admin Section aka Behind the Curtain</h1>
+  <p>List of users:</p>
+  <table>
+    <tr>
+      <th>User ID</th>
+      <th>Nickname</th>
+      <th>Email</th>
+      <th>Last Login</th>
+    </tr>
+    {% for user in users %}
+    <tr>
+      <td>{{ user.id }}</td>
+      <td>{{ user.nickname }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.last_seen }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

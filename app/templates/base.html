@@ -18,7 +18,10 @@ Block content call rendered by specific html page:
       <a href="{{ url_for('home') }}">Front Page</a>
       {% if g.user.is_authenticated() %}
       | <a href="{{ url_for('user', nickname=g.user.nickname) }}">Home</a>
-      | <a href="{{ url_for('logout') }}">Logout</a>  
+      | <a href="{{ url_for('logout') }}">Logout</a>
+      {% if g.user.nickname == 'admin' %}
+      | <a href="{{ url_for('admin')}}">Admin</a>
+      {% endif %}
       {% else %}
       | <a href="{{ url_for('login') }}">Login</a>
       {% endif %}
