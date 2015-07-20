@@ -29,4 +29,5 @@ class EditForm(Form):
     Provide fields for editing user login info.
     '''
     username = StringField('username', validators=[DataRequired()])
+    
     about_me = TextField('about_me', validators=[Length(min=0, max=140)])

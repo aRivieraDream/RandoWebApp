@@ -9,7 +9,7 @@ class User(db.Model):
     #maps users to db sql columns
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
-    password = db.Column(db.String(64), index=True, unique=True)
+    password = db.Column(db.String(64), index=True)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     last_seen = db.Column(db.DateTime)
     about_me = db.Column(db.String(140))

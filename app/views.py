@@ -108,14 +108,26 @@ def after_login(username, password):
 	'''
 	Verifies response from user input & sets user data to flask session
 	'''
-	if username is None or email == "" or not sanitize(username):
+	if username is None or username == "" or not sanitize(username):
 		# validate username for arbitrary conditions & sql injection
-		pause_input('Invalid username. Please try again.', 'login')
+		flash('Invalid username.')
+
+		return pause_input('Invalid username. Please try again.', 'login')
 	# get user info from db
 	user = User.query.filter_by(username=username).first()
 	if user is not None:
 		if password != user.password:
-			pause_input('Invalid password.', 'login')
+			flash('Invalid password.')
+			return redirect(url_for('login'))
+		else:
+			#authenticated
+			remember_me = False
+			if 'remember_me' in session:
+				remember_me = session['remember_me']
+				session.pop('remember_me', None) # why pop here? multiuser?
+			# login_user is a flask ext that stores session info
+			login_user(user, remember=remember_me)
+			return redirect(request.args.get('next') or url_for('index'))
 	else:
 		# create user if doesn't exist
 		user = User(username=username, password=password)
@@ -131,7 +143,7 @@ def after_login(username, password):
 
 def pause_input(warning_text, redirect):
 	flash(warning_text)
-	return redirect(url_for(redirect))
+	return redirect(url_for('index'))
 
 @app.route('/logout')
 def logout():

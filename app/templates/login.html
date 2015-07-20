@@ -22,9 +22,14 @@
 <form action="" method="post" name="login">
     {{ form.hidden_tag() }}
     <p>
-        Please enter your username<br>
-        {{ form.username(size=60) }}
+        username<br>
+        {{ form.username(size=40) }}
         {% for error in form.username.errors %}
+          <span style="color: red;">[{{error}}]</span>
+        {% endfor %}<br>
+        password<br>
+        {{ form.password(size=40) }}
+        {% for error in form.password.errors %}
           <span style="color: red;">[{{error}}]</span>
         {% endfor %}<br>
         <!--DEPRICATED{% for pr in providers %}

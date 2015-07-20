@@ -14,12 +14,20 @@ There were a bunch of dependencies setup following the instruction of the [tutor
 - Navigate to the top directory.
 - `./run.py`
 
+##Tomorrow:
+* upgrade db to reflect not unique password
+* clear db and refresh
+* Facelift
+
 ##Future
-* Logout
+* ~~Logout~~
+* User generation
 * Facelift - bootstrap css
+* Main UI
 * Build functionality for storing info
   - preset preferences based on user (auto prep form)
   - typeahead for quick filling known data
+* 404 & 500 html pages
 * Create an initialization sequence for easy deployment.
-* 
+* password hashing
 * Admin section for monitoring
