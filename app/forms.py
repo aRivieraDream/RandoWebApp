@@ -8,8 +8,8 @@ issues of integrating html and python.
 # basic module import from flask
 from flask.ext.wtf import Form
 # you must pull in the types of fields and validators you need individually.
-from wtforms import StringField, BooleanField, SelectField, TextField
-from wtforms.validators import DataRequired, Length
+from wtforms import StringField, BooleanField, SelectField, TextField, PasswordField
+from wtforms.validators import DataRequired, Length, PasswordInput
 
 class LoginForm(Form):
     '''
@@ -18,15 +18,14 @@ class LoginForm(Form):
     remember_me: checkbox that defaults to True
     '''
     # requires data to be passed to @after_login
-    email = StringField('email', validators=[DataRequired()])
+    username = StringField('username', validators=[DataRequired()])
+    password = PasswordField('password', validators=[DataRequired()], widget=PasswordInput())
     #used to house openid info but now depricating
-    use_email = SelectField('use_email', default='email',
-                            choices=[('email', 'email')])
     remember_me = BooleanField('remember_me', default=True)
 
 class EditForm(Form):
     '''
     Provide fields for editing user login info.
     '''
-    nickname = StringField('nickname', validators=[DataRequired()])
+    username = StringField('username', validators=[DataRequired()])
     about_me = TextField('about_me', validators=[Length(min=0, max=140)])

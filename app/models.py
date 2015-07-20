@@ -8,8 +8,8 @@ from app import db
 class User(db.Model):
     #maps users to db sql columns
     id = db.Column(db.Integer, primary_key=True)
-    nickname = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
+    username = db.Column(db.String(64), index=True, unique=True)
+    password = db.Column(db.String(64), index=True, unique=True)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     last_seen = db.Column(db.DateTime)
     about_me = db.Column(db.String(140))
@@ -35,8 +35,8 @@ class User(db.Model):
 
     def __repr__(self):
         #how the user object is printed
-        return '<userID=%r nickname=%r email=%r last_seen=%r>' % (self.id,
-                self.nickname, self.email, self.last_seen)
+        return '<userID=%r nickname=%r password=%r last_seen=%r>' % (self.id,
+                self.username, self.password, self.last_seen)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key = True)

@@ -40,12 +40,12 @@ def home():
 	else:
 		return index()
 
-@app.route('/user/<nickname>')
+@app.route('/user/<username>')
 @login_required
-def user(nickname):
-	user = User.query.filter_by(nickname=nickname).first()
+def user(username):
+	user = User.query.filter_by(username=username).first()
 	if user == None:
-		flash('User %s was not found.' % nickname)
+		flash('User %s was not found.' % username)
 		return redirect(url_for('index'))
 	posts = [
 		{'author': user, 'body': 'Test post #1'},
@@ -64,12 +64,12 @@ def index():
 	'''
 	user = g.user
 	posts = [ #fake array of posts
-		{ #subbing in fake user nickname objects
-			'author': {'nickname': 'John'},
+		{ #subbing in fake user username objects
+			'author': {'username': 'John'},
 			'body': 'Beautiful day in Portland!'
 		},
 		{
-			'author': {'nickname': 'Susan'},
+			'author': {'username': 'Susan'},
 			'body': 'The Avengers movie was so cool!'
 		}
 	]
@@ -96,41 +96,42 @@ def login():
 	form = LoginForm()
 	if form.validate_on_submit():
 		# if fields are filled and user clicks submit
+		username = form.username.data
+		password = form.password.data
 		session['remember_me'] = form.remember_me.data
-		if form.use_email.data == 'email':
-			email = form.email.data
-			return after_login(email)
-		#return resp
-		# oid is a dum pos but this line handles a call to an external
-		# source so that the user doesn't have to create a unique login
-		# return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
+			return after_login(username, password)
 	return render_template('login.html',
 							title='Sign In',
 							form=form)
 
-def after_login(email):
+def after_login(username, password):
 	'''
 	Verifies response from user input & sets user data to flask session
 	'''
-	if email is None or email == "":
-		# validate email for arbitrary conditions
-		flash('Invalid login. Please try again.')
-		return redirect(url_for('login'))
+	if username is None or email == "" or not sanitize(username):
+		# validate username for arbitrary conditions & sql injection
+		pause_input('Invalid username. Please try again.', 'login')
 	# get user info from db
-	user = User.query.filter_by(email=email).first()
-	if user is None:
+	user = User.query.filter_by(username=username).first()
+	if user is not None:
+		if password != user.password:
+			pause_input('Invalid password.', 'login')
+	else:
 		# create user if doesn't exist
-		nickname = email.split('@')[0]
-		user = User(email=email, nickname=nickname)
+		user = User(username=username, password=password)
 		db.session.add(user)
 		db.session.commit()
 	remember_me = False
 	if 'remember_me' in session:
 		remember_me = session['remember_me']
-		session.pop('remember_me', None) # why pop here?
+		session.pop('remember_me', None) # why pop here? multiuser?
 	# login_user is a flask ext that stores session info
 	login_user(user, remember=remember_me)
 	return redirect(request.args.get('next') or url_for('index'))
+
+def pause_input(warning_text, redirect):
+	flash(warning_text)
+	return redirect(url_for(redirect))
 
 @app.route('/logout')
 def logout():
@@ -144,14 +145,14 @@ def edit():
 	form = EditForm()
 	if form.validate_on_submit():
 		# bugging out: no restrictions on same usernames
-		g.user.nickname = form.nickname.data
+		g.user.username = form.username.data
 		g.user.about_me = form.about_me.data
 		db.session.add(g.user)
 		db.session.commit()
 		flash('Your changes have been saved')
 		return redirect(url_for('edit'))
 	else:
-		form.nickname.data = g.user.nickname
+		form.username.data = g.user.username
 		form.about_me.data = g.user.about_me
 		return render_template('edit.html', form=form)
 
@@ -172,4 +173,14 @@ def not_found_error(error):
 def internal_error(error):
 	# todo: make 500 html page
 	db.session.rollback()
-	return 'The server dun goofed. Please go back and try again.'
+	return 'There was an error with your request. Please go back and try again.'
+
+def sanitize(input):
+	# sanitize strings of sql injection
+	if type(input) == str:
+		test_input = input.lower()
+		fail_terms = ['; drop', '; update', '; insert', '; select']
+		for term in fail_terms:
+			if term in test_input:
+				return False
+	return True
