@@ -9,7 +9,7 @@ OPENID_PROVIDERS = [
     {'name': 'Flickr', 'url': 'http://www.flickr.com/<username>'},
     {'name': 'MyOpenID', 'url': 'https://www.myopenid.com'}]
 '''
-#used for sqlite
+#used for sqlite & db migration
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 

@@ -14,6 +14,13 @@ class User(db.Model):
     last_seen = db.Column(db.DateTime)
     about_me = db.Column(db.String(140))
 
+    '''
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+        self.last_seen = db.datetime
+    '''
+
     def is_authenticated(self):
         #fill out if restricting unauthenticated users
         return True

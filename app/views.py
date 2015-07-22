@@ -8,7 +8,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 # these are set in the __init__.py file
 from app import app, db, lm
 # bring forms in from forms.py
-from .forms import LoginForm, EditForm
+from .forms import LoginForm, EditForm, AdminForm
 from .models import User
 #timestamp shit
 from datetime import datetime
@@ -86,9 +86,8 @@ def login():
 	POST: validates user input & updates db if new user or retreives
 		  old user data.
 	NOTE: not supporting openid cause it suxdix
-	TODO:
-	change handling of username to support username rather than email
 	'''
+	print 'enter login()'
 	#if user login already stored in session data, skip everything
 	if g.user is not None and g.user.is_authenticated():
 		return redirect(url_for('index'))
@@ -99,6 +98,7 @@ def login():
 		username = form.username.data
 		password = form.password.data
 		session['remember_me'] = form.remember_me.data
+		print username, password
 		return after_login(username, password)
 	return render_template('login.html',
 							title='Sign In',
@@ -106,33 +106,51 @@ def login():
 
 def after_login(username, password):
 	'''
-	Verifies response from user input & sets user data to flask session
+	Verifies username and password against db.
+	Flash error if user does not exist or incorrect password
+	Create user if this is first user.
 	'''
+	print 'after login'
 	if username is None or username == "" or not sanitize(username):
 		# validate username for arbitrary conditions & sql injection
 		flash('Invalid username.')
+		# todo: fix pause_input
+		flash('Invalid password.')
+		return redirect(url_for('login'))
+		# return pause_input('Invalid username. Please try again.', 'login')
 
-		return pause_input('Invalid username. Please try again.', 'login')
 	# get user info from db
+		# could prolly change this call to check for matches on u/n and pass at once
+		# but that wouldn't give useful info to user about what they did wrong
 	user = User.query.filter_by(username=username).first()
 	if user is not None:
+		# if user exists in the system check for password
 		if password != user.password:
 			flash('Invalid password.')
 			return redirect(url_for('login'))
+		'''Covered
 		else:
-			#authenticated
+			# authenticated
 			remember_me = False
 			if 'remember_me' in session:
 				remember_me = session['remember_me']
-				session.pop('remember_me', None) # why pop here? multiuser?
+				session.pop('remember_me', None) # why pop here? removes
 			# login_user is a flask ext that stores session info
-			login_user(user, remember=remember_me)
+			login_user(existing_user, remember=remember_me)
 			return redirect(request.args.get('next') or url_for('index'))
+		'''
 	else:
-		# create user if doesn't exist
-		user = User(username=username, password=password)
-		db.session.add(user)
-		db.session.commit()
+		# username not found
+		user_list = User.query.all()
+		if len(user_list) > 1000:
+			# username not in system
+			flash('Uknown username. Please try again')
+			return redirect(url_for('login'))
+		else:
+			# create 1st user
+			user = User(username=username, password=password)
+			db.session.add(user)
+			db.session.commit()
 	remember_me = False
 	if 'remember_me' in session:
 		remember_me = session['remember_me']
@@ -156,7 +174,7 @@ def logout():
 def edit():
 	form = EditForm()
 	if form.validate_on_submit():
-		# bugging out: no restrictions on same usernames
+		# bugging out: no restrictions on same usernames--fixed
 		g.user.username = form.username.data
 		g.user.about_me = form.about_me.data
 		db.session.add(g.user)
@@ -168,12 +186,33 @@ def edit():
 		form.about_me.data = g.user.about_me
 		return render_template('edit.html', form=form)
 
+
+@app.route('/admin', methods=['GET', 'POST'])
 @login_required
-@app.route('/admin', methods=['GET'])
 def admin():
-	#form = AdminForm
+	form = AdminForm() # for generating new logins
+	if form.validate_on_submit():
+		username = form.username.data
+		password = form.password_creation.data
+		user = User.query.filter_by(username=username).first()
+		if user is not None:
+			# username is taken
+			flash('Username already taken. Please try again.')
+			return redirect(url_for('admin'))
+		else:
+			# username is available
+			new_user = User(username=username, password=password)
+			db.session.add(new_user)
+			db.session.commit()
+			flash('New user created.')
+			return redirect(url_for('admin'))
 	user_list = User.query.all()
-	return render_template('admin.html', title='Control Center', users=user_list)
+	admin = g.user
+	return render_template('admin.html',
+							title='Control Center',
+							users=user_list,
+							form=form,
+							admin=admin)
 
 @app.errorhandler(404)
 def not_found_error(error):
@@ -196,3 +235,30 @@ def sanitize(input):
 			if term in test_input:
 				return False
 	return True
+
+@app.route('/sudo', methods=['GET', 'POST'])
+def sudo():
+	# superuser for debugging logins
+	form = AdminForm() # for generating new logins
+	if form.validate_on_submit():
+		username = form.username.data
+		user = User.query.filter_by(username=username).first()
+		if user is not None:
+			# username is taken
+			flash('Username already taken. Please try again.')
+			return redirect(url_for('sudo'))
+		else:
+			# username is available
+			new_user = User(username=username, password=password)
+			db.session.add(new_user)
+			db.session.commit()
+			flash('New user created.')
+			return redirect(url_for('sudo'))
+	user_list = User.query.all()
+	admin = g.user
+	return render_template('admin.html',
+							title='Sudo',
+							users=user_list,
+							form=form,
+							sudo=True,
+							admin=admin)
