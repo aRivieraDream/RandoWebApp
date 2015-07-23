@@ -6,15 +6,23 @@ Block content call rendered by specific html page:
 -->
 <html>
   <head>
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/static/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% if title %}
-    <title>{{ title }} - Pierce's Test Blog</title>
+    <title>{{ title }} - Production Tracker</title>
     {% else %}
-    <title>Welcome to Pierce's Test Blog</title>
+    <title>Production Tracker</title>
     {% endif %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
     <!-- nav bar with link to page -->
-    <div>Microblog:
+    <div><!--
       <a href="{{ url_for('home') }}">Front Page</a>
       {% if g.user.is_authenticated() %}
       | <a href="{{ url_for('user', username=g.user.username) }}">Home</a>
@@ -24,8 +32,25 @@ Block content call rendered by specific html page:
       {% endif %}
       {% else %}
       | <a href="{{ url_for('login') }}">Login</a>
-      {% endif %}
+      {% endif %}-->
     </div>
+    <div class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" href="{{ url_for('home') }}">Production Tracking</a>
+      <ul class="nav">
+        <li class="active"><a href="#">Home</a></li>
+        {% if g.user.is_authenticated() %}
+        <li><a href="{{ url_for('user', username=g.user.username) }}">Home</a></li>
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        {% if g.user.username == 'admin' %}
+        <li><a href="{{ url_for('admin')}}">Admin</a></li>
+        {% endif %}
+        {% else %}
+        <li><a href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
     <hr>
     {% with messages = get_flashed_messages() %}
       {% if messages %}

@@ -1,7 +1,9 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
 {% block content %}
-    <h1>Hi, {{ user.username }}!</h1>
+<div class="page-header">
+<h1>Hi, {{ user.username }}! <small>Please enter your production here.</small></h1>
+</div>
     {% for post in posts %}
     <div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div>
     {% endfor %}
