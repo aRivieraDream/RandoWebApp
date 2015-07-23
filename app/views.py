@@ -87,7 +87,6 @@ def login():
 		  old user data.
 	NOTE: not supporting openid cause it suxdix
 	'''
-	print 'enter login()'
 	#if user login already stored in session data, skip everything
 	if g.user is not None and g.user.is_authenticated():
 		return redirect(url_for('index'))
@@ -128,17 +127,6 @@ def after_login(username, password):
 		if password != user.password:
 			flash('Invalid password.')
 			return redirect(url_for('login'))
-		'''Covered
-		else:
-			# authenticated
-			remember_me = False
-			if 'remember_me' in session:
-				remember_me = session['remember_me']
-				session.pop('remember_me', None) # why pop here? removes
-			# login_user is a flask ext that stores session info
-			login_user(existing_user, remember=remember_me)
-			return redirect(request.args.get('next') or url_for('index'))
-		'''
 	else:
 		# username not found
 		user_list = User.query.all()
@@ -158,10 +146,6 @@ def after_login(username, password):
 	# login_user is a flask ext that stores session info
 	login_user(user, remember=remember_me)
 	return redirect(request.args.get('next') or url_for('index'))
-
-def pause_input(warning_text, redirect):
-	flash(warning_text)
-	return redirect(url_for('index'))
 
 @app.route('/logout')
 def logout():
@@ -185,7 +169,6 @@ def edit():
 		form.username.data = g.user.username
 		form.about_me.data = g.user.about_me
 		return render_template('edit.html', form=form)
-
 
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
