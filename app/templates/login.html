@@ -1,25 +1,25 @@
 <!-- extend base layout by defining block content-->
 {% extends "base.html" %}
-
 {% block content %}
 {% include 'flash.html' %}
+<div class="well">
   <head>
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="Login Page">
+    <meta name="author" content="Pierce C Young">
     <link rel="icon" href="../../favicon.ico">
 
     <!-- Bootstrap core CSS -->
     <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="bootstrap/signin.css" rel="stylesheet">
+    <link href="/login.css" rel="stylesheet">
     <script src="../../assets/js/ie-emulation-modes-warning.js"></script><style type="text/css"></style>
   </head>
 
   <body>
 
-    <div class="container">
+    <div class="wrapper">
 
       <form class="form-signin">
         <h2 class="form-signin-heading">Please sign in</h2>
