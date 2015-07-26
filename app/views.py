@@ -61,6 +61,8 @@ def user(username):
 def index():
 	'''
 	main page for logged in users
+	Grabs all previous sources that the user has worked on and
+	pre-populates a list. 
 	'''
 	user = g.user
 	posts = [ #fake array of posts

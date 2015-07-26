@@ -1,10 +1,30 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
 {% block content %}
-<div class="page-header">
+{% include 'flash.html' %}
+<head>
+  <!-- include scripts for typeahead -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script  type="text/javascript" src="/static/js/typeahead.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function(){
+    $('input.typeahead').typeahead({
+      name: 'accounts',
+      local: ['Audi', 'BMW', 'Bugatti', 'Ferrari', 'Ford', 'Lamborghini', 'Mercedes Benz', 'Porsche', 'Rolls-Royce', 'Volkswagen']
+      });
+    });
+  </script>
+  <!-- come back to this when working on typeahead -->
+</head>
+<div class="page-header text-center">
 <h1>Hi, {{ user.username }}! <small>Please enter your production here.</small></h1>
 </div>
-    {% for post in posts %}
-    <div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div>
-    {% endfor %}
+{% for post in posts %}
+<div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div>
+{% endfor %}
+<!-- more typeahead functionality to come back to later
+<div class="bs-example">
+    <input type="text" class="typeahead tt-query" autocomplete="off" spellcheck="false">
+</div>
+-->
 {% endblock %}

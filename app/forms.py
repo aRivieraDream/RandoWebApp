@@ -21,8 +21,6 @@ class LoginForm(Form):
     # requires data to be passed to @after_login
     username = StringField('username', validators=[DataRequired()])
     password = PasswordField('password', validators=[DataRequired()], widget=PasswordInput())
-    # used to create passwords on admin table
-    #password_creation = StringField('password_creation', validators=[DataRequired()])
     # used to house openid info but now depricating
     remember_me = BooleanField('remember_me', default=True)
 
@@ -39,3 +37,14 @@ class AdminForm(Form):
     '''
     username = StringField('username', validators=[DataRequired()])
     password_creation = StringField('password_creation', validators=[DataRequired()])
+
+class NewsProductionForm(Form, source_list):
+    '''
+    Fields for tracking production on external news sources.
+    todo: define source list to change either with RTS source list
+            or to change with user input.
+    '''
+    new_source = StringField('new_source', validators=[Length(min=3, max=140)])
+    source_list = ['TechCrunch', 'PI Online', 'New York Times']
+    source_name = SelectField('source_name',
+                                choices=source_list)
