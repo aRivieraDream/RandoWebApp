@@ -25,19 +25,38 @@ Block content call rendered by specific html page:
     <div class="container">
       <div class="navbar">
         <div class="navbar-inner">
-          <a class="brand" href="{{ url_for('home') }}">Production Tracking</a>
+
+          <a class="brand" href="{{ url_for('home') }}">
+            <span class="sr-only">Production Tracking</span>
+          </a>
           <ul class="nav">
-            <li class="active"><a href="#">Home</a></li>
             {% if g.user.is_authenticated() %}
-            <li><a href="{{ url_for('user', username=g.user.username) }}">Home</a></li>
-            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            <li>
+              <a href="{{ url_for('user', username=g.user.username) }}">
+              <span class="sr-only">Home</span>
+              </a>
+            </li>
+            <li>
+              <a href="{{ url_for('logout') }}">
+                <span class="sr-only">Logout</span>
+              </a>
+            </li>
             {% if g.user.username == 'admin' %}
-            <li><a href="{{ url_for('admin')}}">Admin</a></li>
+            <li>
+              <a href="{{ url_for('admin')}}">
+                <span class="sr-only">Admin</span>
+              </a>
+            </li>
             {% endif %}
             {% else %}
-            <li><a href="{{ url_for('login') }}">Login</a>
+            <li>
+              <a href="{{ url_for('login') }}">
+                <span class="sr-only">Login</span>
+              </a>
+            </li>
             {% endif %}
           </ul>
+
         </div>
       </div>
     </div>
