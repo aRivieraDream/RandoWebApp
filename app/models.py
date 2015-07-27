@@ -26,7 +26,7 @@ class User(db.Model):
                                     backref=db.backref(daily_sources, lazy='dynamic'),
                                     lazy='dynamic')
 
-    '''
+    ''' unnecessary now -- i think
     def __init__(self, username, password):
         self.username = username
         self.password = password
@@ -84,3 +84,13 @@ class Post(db.Model):
 class Source(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(140))
+    daily_users = db.relationship('User',
+                                    secondary=daily_sources,
+                                    primaryjoin=(daily_sources.c.source == id),
+                                    secondaryjoin=(daily_sources.c.researcher == id),
+                                    backref=db.backref(daily_sources, lazy='dynamic'),
+                                    lazy='dynamic')
+    '''
+    def __repr__(self):
+        return '<%r %r>' % (self.id, self.name)
+    '''

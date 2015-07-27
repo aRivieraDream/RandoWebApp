@@ -19,9 +19,27 @@
 <div class="page-header text-center">
 <h1>Hi, {{ user.username }}! <small>Please enter your production here.</small></h1>
 </div>
-{% for post in posts %}
-<div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div>
-{% endfor %}
+<div class=container>
+  <table>
+    <tr>
+      <h3>
+      <td>Source Name</td>
+      <td>Stories Read</td>
+      </h3>
+    </tr>
+    {% for source in daily_sources %}
+    <tr>
+      <td>{{ source }}</td>
+      <td>Count input goes here</td>
+      <button class="btn btn-primary" type="submit">Remove</button>
+      <button class="btn btn-secondary" type="submit">Some Stuff</button>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+<div class=container offset1>
+  {{ form.new_source }}
+  <button class="btn btn-primary" type="submit">Add Source</button>
 <!-- more typeahead functionality to come back to later
 <div class="bs-example">
     <input type="text" class="typeahead tt-query" autocomplete="off" spellcheck="false">

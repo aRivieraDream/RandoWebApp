@@ -8,8 +8,8 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 # these are set in the __init__.py file
 from app import app, db, lm
 # bring forms in from forms.py
-from .forms import LoginForm, EditForm, AdminForm
-from .models import User
+from .forms import LoginForm, EditForm, AdminForm, NewsProductionForm
+from .models import User, Source
 #timestamp shit
 from datetime import datetime
 
@@ -56,15 +56,33 @@ def user(username):
 							posts=posts)
 
 
-@app.route('/index')
+@app.route('/index', methods=["GET", "POST"])
 @login_required
 def index():
 	'''
 	main page for logged in users
 	Grabs all previous sources that the user has worked on and
-	pre-populates a list. 
+	pre-populates a list.
 	'''
 	user = g.user
+	form = NewsProductionForm()
+	count = form.count.data
+	all_sources = Source.query.all()
+	form.set_source_list(all_sources)
+	daily_sources = user.daily_sources.all()
+
+	if form.validate_on_submit():
+		''' verify and add source to source list
+		if new_source != None or '':
+			new_source = form.new_source.data
+			if new_source in all_sources:
+				flash('Source already exists')
+				return redirect(url_for('index'))
+			else:
+
+				user.add_daily()
+		'''
+	'''
 	posts = [ #fake array of posts
 		{ #subbing in fake user username objects
 			'author': {'username': 'John'},
@@ -75,10 +93,12 @@ def index():
 			'body': 'The Avengers movie was so cool!'
 		}
 	]
+	'''
 	return render_template('index.html',
-							title = 'Home',
-							user = user,
-							posts = posts)
+							title='Home',
+							user=user,
+							daily_sources=daily_sources,
+							form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

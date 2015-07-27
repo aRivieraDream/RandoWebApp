@@ -8,7 +8,7 @@ issues of integrating html and python.
 # basic module import from flask
 from flask.ext.wtf import Form
 # you must pull in the types of fields and validators you need individually.
-from wtforms import StringField, BooleanField, SelectField, TextField, PasswordField
+from wtforms import StringField, BooleanField, SelectField, TextField, PasswordField, IntegerField
 from wtforms.validators import DataRequired, Length
 from wtforms.widgets import PasswordInput
 
@@ -38,13 +38,17 @@ class AdminForm(Form):
     username = StringField('username', validators=[DataRequired()])
     password_creation = StringField('password_creation', validators=[DataRequired()])
 
-class NewsProductionForm(Form, source_list):
+class NewsProductionForm(Form):
     '''
     Fields for tracking production on external news sources.
     todo: define source list to change either with RTS source list
             or to change with user input.
     '''
     new_source = StringField('new_source', validators=[Length(min=3, max=140)])
-    source_list = ['TechCrunch', 'PI Online', 'New York Times']
-    source_name = SelectField('source_name',
-                                choices=source_list)
+    count = IntegerField('count')
+    # list of sources used in case user want to add a new source
+    all_sources = []
+    def set_source_list(source_list):
+        all_sources = source_list
+    existing_sources = SelectField('existing_sources',
+                                choices=all_sources)
