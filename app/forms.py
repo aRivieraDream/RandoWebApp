@@ -48,7 +48,7 @@ class NewsProductionForm(Form):
     count = IntegerField('count')
     # list of sources used in case user want to add a new source
     all_sources = []
-    def set_source_list(source_list):
+    def set_source_list(self, source_list):
         all_sources = source_list
     existing_sources = SelectField('existing_sources',
                                 choices=all_sources)

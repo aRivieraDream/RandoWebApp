@@ -5,48 +5,51 @@ i'm thinking not
 '''
 from app import db
 
-# relationship table defining frequently used sources for users
-daily_sources = db.Table('daily_sources',
-    db.Column('researcher', db.Integer, db.ForeignKey('user.id')),
-    db.Column('source', db.Integer, db.ForeignKey('source.id'))
+# relationship table defining frequently used sources for User
+daily_sources = db.Table(
+    'daily_sources',
+    db.Column('researcher_id', db.Integer, db.ForeignKey('User.id')),
+    db.Column('source_id', db.Integer, db.ForeignKey('Source.id'))
 )
+
 
 class User(db.Model):
     #maps users to db sql columns
+    __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     password = db.Column(db.String(64), index=True)
-    posts = db.relationship('Post', backref='author', lazy='dynamic')
+    posts = db.relationship('Post', backref='user', lazy='dynamic')
     last_seen = db.Column(db.DateTime)
     about_me = db.Column(db.String(140))
+    frequent_sources = db.relationship('Source',
+                                        secondary=daily_sources,
+                                        backref='frequent_users',
+                                        lazy='dynamic')
+    '''Depricating to try out new relationship ref
     daily_sources = db.relationship('Source',
                                     secondary=daily_sources,
                                     primaryjoin=(daily_sources.c.researcher == id),
                                     secondaryjoin=(daily_sources.c.source == id),
                                     backref=db.backref(daily_sources, lazy='dynamic'),
                                     lazy='dynamic')
-
-    ''' unnecessary now -- i think
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-        self.last_seen = db.datetime
     '''
+
     def add_daily(self, source):
         #adds source to list of sources frequently used by user
         if not self.uses_daily(source):
-            self.daily_sources.append(source)
+            self.frequent_sources.append(source)
             return self
 
     def remove_daily(self, source):
         #removes source from list of user's frequently used sources
         if self.uses_daily(source):
-            self.daily_sources.remove(source)
+            self.frequent_sources.remove(source)
             return self
 
     def uses_daily(self, source):
         # returns True if user is associated with a particular source
-        return self.daily_sources.filter(daily_sources.c.user == source.id).count() > 0
+        return self.frequent_sources.filter(daily_sources.c.source_id == source.id).count() > 0
 
     def is_authenticated(self):
         #fill out if restricting unauthenticated users
@@ -72,18 +75,11 @@ class User(db.Model):
         return '<userID=%r nickname=%r password=%r last_seen=%r>' % (self.id,
                 self.username, self.password, self.last_seen)
 
-class Post(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    body = db.Column(db.String(140))
-    timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def __repr__(self):
-        return '<Post %r>' % (self.body)
-
 class Source(db.Model):
+    __tablename__ = 'Source'
     id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(140))
+    name = db.Column(db.String())
+    '''
     daily_users = db.relationship('User',
                                     secondary=daily_sources,
                                     primaryjoin=(daily_sources.c.source == id),
@@ -93,4 +89,12 @@ class Source(db.Model):
     '''
     def __repr__(self):
         return '<%r %r>' % (self.id, self.name)
-    '''
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    body = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
+
+    def __repr__(self):
+        return '<Post %r>' % (self.body)

@@ -69,7 +69,7 @@ def index():
 	count = form.count.data
 	all_sources = Source.query.all()
 	form.set_source_list(all_sources)
-	daily_sources = user.daily_sources.all()
+	daily_sources = user.frequent_sources.all()
 
 	if form.validate_on_submit():
 		''' verify and add source to source list
